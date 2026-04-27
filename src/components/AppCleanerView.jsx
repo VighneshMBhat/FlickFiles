@@ -30,10 +30,10 @@ const MOCK_SCAN_LOGS = [
 ];
 
 const JUNK_CATEGORIES = [
-  { id: 'cache', name: 'System Cache', icon: <Database size={18} />, size: '1.4 GB', color: 'var(--accent-blue)', desc: 'Temporary system files' },
-  { id: 'residuals', name: 'Residual Data', icon: <Layers size={18} />, size: '840 MB', color: 'var(--accent-purple)', desc: 'Leftovers from deleted apps' },
-  { id: 'duplicates', name: 'Media Waste', icon: <LayoutGrid size={18} />, size: '2.1 GB', color: 'var(--accent-green)', desc: 'Duplicate photos & videos' },
-  { id: 'large', name: 'Large Files', icon: <HardDrive size={18} />, size: '4.2 GB', color: 'var(--accent-yellow)', desc: 'Files over 500MB' }
+  { id: 'cache', name: 'System Cache', icon: <Database size={16} />, size: '1.4 GB', color: 'var(--accent-blue)', desc: 'Temp files' },
+  { id: 'residuals', name: 'Residual Data', icon: <Layers size={16} />, size: '840 MB', color: 'var(--accent-purple)', desc: 'App leftovers' },
+  { id: 'duplicates', name: 'Media Waste', icon: <LayoutGrid size={16} />, size: '2.1 GB', color: 'var(--accent-green)', desc: 'Duplicates' },
+  { id: 'large', name: 'Large Files', icon: <HardDrive size={16} />, size: '4.2 GB', color: 'var(--accent-yellow)', desc: 'Files >500MB' }
 ];
 
 export default function AppCleanerView() {
@@ -112,34 +112,34 @@ export default function AppCleanerView() {
         <div style={{ position: 'absolute', top: '0', left: '20%', width: '1px', height: '100%', background: 'linear-gradient(180deg, transparent, rgba(255,255,255,0.1), transparent)' }} />
       </div>
 
-      <div style={{ flex: 1, padding: '32px 24px 120px', display: 'flex', flexDirection: 'column', overflowY: 'auto' }} className="no-scrollbar">
+      <div style={{ flex: 1, padding: '12px 20px 100px', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
         
-        {/* Header Section */}
-        <div style={{ marginBottom: '40px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '14px', marginBottom: '8px' }}>
-            <div style={{ 
-              width: 44, height: 44, borderRadius: '14px', 
-              background: 'rgba(61, 126, 255, 0.1)', border: '1px solid rgba(61, 126, 255, 0.3)',
-              display: 'flex', alignItems: 'center', justifyContent: 'center'
-            }}>
-              <Brush size={24} color="var(--accent-blue)" />
-            </div>
-            <h1 style={{ fontSize: '28px', fontWeight: 900, color: '#fff', letterSpacing: '-1px', fontFamily: "'Space Grotesk', sans-serif" }}>
+        {/* Header Section - Compact inline */}
+        <div style={{ marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '12px' }}>
+          <div style={{ 
+            width: 36, height: 36, borderRadius: '12px', 
+            background: 'rgba(61, 126, 255, 0.1)', border: '1px solid rgba(61, 126, 255, 0.3)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0
+          }}>
+            <Brush size={20} color="var(--accent-blue)" />
+          </div>
+          <div>
+            <h1 style={{ fontSize: '22px', fontWeight: 900, color: '#fff', letterSpacing: '-0.5px', fontFamily: "'Space Grotesk', sans-serif", margin: 0 }}>
               Core Optimizer
             </h1>
+            <p style={{ color: 'rgba(255,255,255,0.35)', fontSize: '12px', fontWeight: 500, margin: 0 }}>
+              Advanced system-level scan & clean up
+            </p>
           </div>
-          <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: '14px', fontWeight: 500 }}>
-            Advanced system-level scan & clean up
-          </p>
         </div>
 
-        {/* Main Scanner Hub */}
+        {/* Main Scanner Hub - Compact */}
         <div style={{ 
           background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)',
-          borderRadius: '40px', padding: '60px 24px', display: 'flex', flexDirection: 'column', 
-          alignItems: 'center', position: 'relative', marginBottom: '32px',
-          boxShadow: '0 20px 60px rgba(0,0,0,0.5)',
-          minHeight: '400px', justifyContent: 'center'
+          borderRadius: '28px', padding: '24px 20px', display: 'flex', flexDirection: 'column', 
+          alignItems: 'center', position: 'relative', marginBottom: '12px',
+          boxShadow: '0 12px 40px rgba(0,0,0,0.4)',
+          flex: 1, justifyContent: 'center', minHeight: 0
         }}>
           {/* Animated Background Pulse */}
           <AnimatePresence>
@@ -150,28 +150,28 @@ export default function AppCleanerView() {
                 exit={{ opacity: 0 }}
                 transition={{ duration: 3, repeat: Infinity }}
                 style={{ 
-                  position: 'absolute', width: '300px', height: '300px', 
+                  position: 'absolute', width: '200px', height: '200px', 
                   borderRadius: '50%', background: status === 'cleaning' ? 'var(--accent-green)' : 'var(--accent-blue)', 
-                  filter: 'blur(100px)', zIndex: 0 
+                  filter: 'blur(80px)', zIndex: 0 
                 }}
               />
             )}
           </AnimatePresence>
 
           {/* Central Progress Ring */}
-          <div style={{ position: 'relative', width: 220, height: 220, display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 2 }}>
-            <svg width="220" height="220" viewBox="0 0 220 220" style={{ transform: 'rotate(-90deg)' }}>
-              <circle cx="110" cy="110" r="100" fill="none" stroke="rgba(255,255,255,0.03)" strokeWidth="12" />
+          <div style={{ position: 'relative', width: 160, height: 160, display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 2 }}>
+            <svg width="160" height="160" viewBox="0 0 160 160" style={{ transform: 'rotate(-90deg)' }}>
+              <circle cx="80" cy="80" r="72" fill="none" stroke="rgba(255,255,255,0.03)" strokeWidth="10" />
               <motion.circle 
-                cx="110" cy="110" r="100" fill="none" 
+                cx="80" cy="80" r="72" fill="none" 
                 stroke={status === 'cleaning' ? 'var(--accent-green)' : 'var(--accent-blue)'}
-                strokeWidth="12" 
-                strokeDasharray="628.3" 
-                initial={{ strokeDashoffset: 628.3 }} 
-                animate={{ strokeDashoffset: 628.3 - (628.3 * progress / 100) }}
+                strokeWidth="10" 
+                strokeDasharray="452.4" 
+                initial={{ strokeDashoffset: 452.4 }} 
+                animate={{ strokeDashoffset: 452.4 - (452.4 * progress / 100) }}
                 transition={{ type: 'spring', stiffness: 50, damping: 20 }}
                 strokeLinecap="round"
-                style={{ filter: `drop-shadow(0 0 20px ${status === 'cleaning' ? 'var(--accent-green)' : 'var(--accent-blue)'}60)` }}
+                style={{ filter: `drop-shadow(0 0 15px ${status === 'cleaning' ? 'var(--accent-green)' : 'var(--accent-blue)'}60)` }}
               />
             </svg>
             
@@ -179,32 +179,32 @@ export default function AppCleanerView() {
               <AnimatePresence mode="wait">
                 {status === 'idle' && (
                   <motion.div key="idle" initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 1.2 }}>
-                    <Search size={48} color="rgba(255,255,255,0.2)" />
-                    <p style={{ color: 'rgba(255,255,255,0.3)', fontSize: '11px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '2px', marginTop: '12px' }}>System Ready</p>
+                    <Search size={28} color="rgba(255,255,255,0.2)" />
+                    <p style={{ color: 'rgba(255,255,255,0.3)', fontSize: '9px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '1.5px', marginTop: '6px' }}>System Ready</p>
                   </motion.div>
                 )}
                 {status === 'scanning' && (
                   <motion.div key="scan" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-                    <span style={{ fontSize: '48px', fontWeight: 900, color: '#fff', letterSpacing: '-2px' }}>{Math.round(progress)}%</span>
-                    <p style={{ color: 'var(--accent-blue)', fontSize: '11px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '2px', marginTop: '4px' }}>Analyzing...</p>
+                    <span style={{ fontSize: '24px', fontWeight: 900, color: '#fff', letterSpacing: '-1px' }}>{Math.round(progress)}%</span>
+                    <p style={{ color: 'var(--accent-blue)', fontSize: '9px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '1.5px', marginTop: '2px' }}>Analyzing...</p>
                   </motion.div>
                 )}
                 {status === 'analyzed' && (
                   <motion.div key="result" initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0 }}>
-                    <span style={{ fontSize: '48px', fontWeight: 900, color: 'var(--accent-yellow)', letterSpacing: '-2px' }}>{totalFound}GB</span>
-                    <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: '11px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '2px', marginTop: '4px' }}>Cleanable Found</p>
+                    <span style={{ fontSize: '24px', fontWeight: 900, color: 'var(--accent-yellow)', letterSpacing: '-1px' }}>{totalFound}GB</span>
+                    <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: '9px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '1.5px', marginTop: '2px' }}>Cleanable Found</p>
                   </motion.div>
                 )}
                 {status === 'cleaning' && (
                   <motion.div key="clean" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-                    <span style={{ fontSize: '48px', fontWeight: 900, color: '#fff', letterSpacing: '-2px' }}>{Math.round(progress)}%</span>
-                    <p style={{ color: 'var(--accent-green)', fontSize: '11px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '2px', marginTop: '4px' }}>Cleaning Junk...</p>
+                    <span style={{ fontSize: '24px', fontWeight: 900, color: '#fff', letterSpacing: '-1px' }}>{Math.round(progress)}%</span>
+                    <p style={{ color: 'var(--accent-green)', fontSize: '9px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '1.5px', marginTop: '2px' }}>Cleaning Junk...</p>
                   </motion.div>
                 )}
                 {status === 'done' && (
                   <motion.div key="done" initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }}>
-                    <ShieldCheck size={56} color="var(--accent-green)" />
-                    <p style={{ color: 'var(--accent-green)', fontSize: '11px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '2px', marginTop: '12px' }}>Optimized</p>
+                    <ShieldCheck size={30} color="var(--accent-green)" />
+                    <p style={{ color: 'var(--accent-green)', fontSize: '9px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '1.5px', marginTop: '6px' }}>Optimized</p>
                   </motion.div>
                 )}
               </AnimatePresence>
@@ -212,7 +212,7 @@ export default function AppCleanerView() {
           </div>
 
           {/* Technical Readout / Logs */}
-          <div style={{ marginTop: '40px', width: '100%', maxWidth: '240px', height: '20px', overflow: 'hidden' }}>
+          <div style={{ marginTop: '16px', width: '100%', maxWidth: '220px', height: '18px', overflow: 'hidden' }}>
             <AnimatePresence mode="wait">
               <motion.p
                 key={logIndex}
@@ -221,7 +221,7 @@ export default function AppCleanerView() {
                 exit={{ opacity: 0, y: -10 }}
                 style={{ 
                   color: status === 'idle' ? 'rgba(255,255,255,0.2)' : 'var(--accent-blue)', 
-                  fontSize: '11px', fontWeight: 600, textAlign: 'center', 
+                  fontSize: '10px', fontWeight: 600, textAlign: 'center', 
                   fontFamily: 'monospace', textTransform: 'uppercase'
                 }}
               >
@@ -232,7 +232,7 @@ export default function AppCleanerView() {
         </div>
 
         {/* Action Button Section */}
-        <div style={{ marginBottom: '40px' }}>
+        <div style={{ marginBottom: '12px', flexShrink: 0 }}>
           <AnimatePresence mode="wait">
             {status === 'idle' && (
               <motion.button
@@ -240,14 +240,14 @@ export default function AppCleanerView() {
                 whileTap={{ scale: 0.98 }}
                 onClick={startScan}
                 style={{
-                  width: '100%', padding: '24px', borderRadius: '24px',
+                  width: '100%', padding: '18px', borderRadius: '20px',
                   background: 'linear-gradient(90deg, #1C448E 0%, var(--accent-blue) 100%)',
-                  border: 'none', color: '#fff', fontSize: '18px', fontWeight: 800,
-                  boxShadow: '0 10px 40px rgba(28, 68, 142, 0.4)', cursor: 'pointer',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '12px'
+                  border: 'none', color: '#fff', fontSize: '16px', fontWeight: 800,
+                  boxShadow: '0 8px 30px rgba(28, 68, 142, 0.4)', cursor: 'pointer',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px'
                 }}
               >
-                <RefreshCw size={20} /> Full System Scan
+                <RefreshCw size={18} /> Full System Scan
               </motion.button>
             )}
 
@@ -257,14 +257,14 @@ export default function AppCleanerView() {
                 whileTap={{ scale: 0.98 }}
                 onClick={startCleaning}
                 style={{
-                  width: '100%', padding: '24px', borderRadius: '24px',
+                  width: '100%', padding: '18px', borderRadius: '20px',
                   background: 'linear-gradient(90deg, #00C853 0%, var(--accent-green) 100%)',
-                  border: 'none', color: '#fff', fontSize: '18px', fontWeight: 800,
-                  boxShadow: '0 10px 40px rgba(0, 200, 83, 0.4)', cursor: 'pointer',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '12px'
+                  border: 'none', color: '#fff', fontSize: '16px', fontWeight: 800,
+                  boxShadow: '0 8px 30px rgba(0, 200, 83, 0.4)', cursor: 'pointer',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px'
                 }}
               >
-                <Zap size={20} fill="white" /> Clean up {totalFound}GB Now
+                <Zap size={18} fill="white" /> Clean up {totalFound}GB Now
               </motion.button>
             )}
 
@@ -274,9 +274,9 @@ export default function AppCleanerView() {
                 whileTap={{ scale: 0.98 }}
                 onClick={reset}
                 style={{
-                  width: '100%', padding: '24px', borderRadius: '24px',
+                  width: '100%', padding: '18px', borderRadius: '20px',
                   background: 'rgba(255,255,255,0.05)',
-                  border: '1px solid rgba(255,255,255,0.1)', color: '#fff', fontSize: '16px', fontWeight: 700,
+                  border: '1px solid rgba(255,255,255,0.1)', color: '#fff', fontSize: '15px', fontWeight: 700,
                   cursor: 'pointer'
                 }}
               >
@@ -286,8 +286,8 @@ export default function AppCleanerView() {
           </AnimatePresence>
         </div>
 
-        {/* Junk Categories (Only show in Analyzed/Cleaning/Done) */}
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+        {/* Junk Categories - Compact 2x2 grid */}
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', flexShrink: 0 }}>
           {JUNK_CATEGORIES.map((cat, idx) => (
             <motion.div
               key={cat.id}
@@ -296,23 +296,25 @@ export default function AppCleanerView() {
               transition={{ delay: idx * 0.1 }}
               style={{
                 background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)',
-                borderRadius: '24px', padding: '20px', display: 'flex', flexDirection: 'column', gap: '12px',
+                borderRadius: '16px', padding: '14px', display: 'flex', flexDirection: 'column', gap: '6px',
                 position: 'relative', overflow: 'hidden'
               }}
             >
-              <div style={{ 
-                width: 32, height: 32, borderRadius: '10px', background: `${cat.color}15`,
-                display: 'flex', alignItems: 'center', justifyContent: 'center', color: cat.color
-              }}>
-                {cat.icon}
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <div style={{ 
+                  width: 28, height: 28, borderRadius: '8px', background: `${cat.color}15`,
+                  display: 'flex', alignItems: 'center', justifyContent: 'center', color: cat.color, flexShrink: 0
+                }}>
+                  {cat.icon}
+                </div>
+                <div style={{ minWidth: 0 }}>
+                  <h4 style={{ fontSize: '12px', fontWeight: 700, color: '#fff', margin: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{cat.name}</h4>
+                  <p style={{ fontSize: '10px', color: 'rgba(255,255,255,0.3)', margin: 0 }}>{cat.desc}</p>
+                </div>
               </div>
-              <div>
-                <h4 style={{ fontSize: '14px', fontWeight: 700, color: '#fff', margin: 0 }}>{cat.name}</h4>
-                <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.3)', marginTop: '2px' }}>{cat.desc}</p>
-              </div>
-              <div style={{ display: 'flex', alignItems: 'baseline', gap: '4px' }}>
-                <span style={{ fontSize: '18px', fontWeight: 800, color: cat.color }}>{status === 'done' ? '0' : cat.size.split(' ')[0]}</span>
-                <span style={{ fontSize: '11px', fontWeight: 700, color: 'rgba(255,255,255,0.2)' }}>{cat.size.split(' ')[1]}</span>
+              <div style={{ display: 'flex', alignItems: 'baseline', gap: '3px' }}>
+                <span style={{ fontSize: '16px', fontWeight: 800, color: cat.color }}>{status === 'done' ? '0' : cat.size.split(' ')[0]}</span>
+                <span style={{ fontSize: '10px', fontWeight: 700, color: 'rgba(255,255,255,0.2)' }}>{cat.size.split(' ')[1]}</span>
               </div>
 
               {/* Individual progress lines if scanning/cleaning */}
