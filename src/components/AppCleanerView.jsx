@@ -5,7 +5,7 @@ import {
   ShieldCheck, 
   Activity, 
   Trash2, 
-  Sparkles,
+  Brush,
   Database,
   Layers,
   Search,
@@ -122,7 +122,7 @@ export default function AppCleanerView() {
               background: 'rgba(61, 126, 255, 0.1)', border: '1px solid rgba(61, 126, 255, 0.3)',
               display: 'flex', alignItems: 'center', justifyContent: 'center'
             }}>
-              <Sparkles size={24} color="var(--accent-blue)" />
+              <Brush size={24} color="var(--accent-blue)" />
             </div>
             <h1 style={{ fontSize: '28px', fontWeight: 900, color: '#fff', letterSpacing: '-1px', fontFamily: "'Space Grotesk', sans-serif" }}>
               Core Optimizer

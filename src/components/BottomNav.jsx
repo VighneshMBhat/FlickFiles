@@ -1,11 +1,11 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { useApp } from '../context/AppContext';
-import { Home, PieChart, Sparkles, Settings } from 'lucide-react';
+import { Home, PieChart, Brush, Settings } from 'lucide-react';
 
 const TABS = [
   { id: 'main', label: 'Home', icon: Home },
-  { id: 'appcleaner', label: 'Cleaner', icon: Sparkles },
+  { id: 'appcleaner', label: 'Cleaner', icon: Brush },
   { id: 'stats', label: 'Analytics', icon: PieChart },
   { id: 'settings', label: 'Settings', icon: Settings }
 ];
