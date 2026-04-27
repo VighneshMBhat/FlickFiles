@@ -1,9 +1,8 @@
 import React, { useState, useRef, useCallback, useEffect, useMemo } from 'react';
 import { motion, useMotionValue, useTransform, useAnimation } from 'framer-motion';
-import { Trash2, Check, FolderOpen, Star, Image } from 'lucide-react';
+import { Trash2, Check, FolderOpen, Image } from 'lucide-react';
 import { soundEngine } from '../utils/soundEngine';
 import { SWIPE_THRESHOLD } from '../data/mockFiles';
-
 import { useApp } from '../context/AppContext';
 
 function formatSize(mb) {
@@ -13,14 +12,14 @@ function formatSize(mb) {
 
 export default function SwipeCard({
   file, onSwipeLeft, onSwipeRight, onSwipeDown, onSwipeUp,
-  index, asmrMode, onLongPress, onDoubleTap, isFavorite,
+  index, asmrMode, onLongPress, onDoubleTap,
 }) {
   const { animationSpeed } = useApp();
   
   const DRAG_SNAP_DURATION = useMemo(() => {
     if (animationSpeed === 'fast') return { type: 'spring', stiffness: 600, damping: 25 };
     if (animationSpeed === 'slow') return { type: 'spring', stiffness: 100, damping: 40 };
-    return { type: 'spring', stiffness: 300, damping: 30 }; // medium/default
+    return { type: 'spring', stiffness: 300, damping: 30 };
   }, [animationSpeed]);
 
   const x = useMotionValue(0);
@@ -28,7 +27,6 @@ export default function SwipeCard({
   const controls = useAnimation();
   const [dragging, setDragging] = useState(false);
   const [imgLoaded, setImgLoaded] = useState(false);
-  const [showFavFlash, setShowFavFlash] = useState(false);
 
   const longPressTimer = useRef(null);
   const lastTap = useRef(0);
@@ -58,15 +56,13 @@ export default function SwipeCard({
     const diff = now - lastTap.current;
     if (diff < 300 && onDoubleTap) {
       onDoubleTap(file);
-      setShowFavFlash(true);
-      setTimeout(() => setShowFavFlash(false), 600);
     }
     lastTap.current = now;
   }, [file, onDoubleTap]);
 
   const handleDragStart = () => {
     setDragging(true);
-    handlePointerUp(); // Cancel long-press on drag
+    handlePointerUp();
   };
 
   const handleDragEnd = async (_, info) => {
@@ -111,7 +107,8 @@ export default function SwipeCard({
         onSwipeRight(file);
         break;
       case 'down':
-        await controls.start({ y: dist, opacity: 0, transition: { duration } });
+        await controls.start({ y: dist * 0.3, transition: { duration: 0.15 } });
+        controls.start({ x: 0, y: 0, transition: DRAG_SNAP_DURATION });
         onSwipeDown(file);
         break;
       case 'up':
@@ -197,7 +194,7 @@ export default function SwipeCard({
           style={{
             position: 'absolute', inset: 0,
             width: '100%', height: '100%',
-            objectFit: 'contain',
+            objectFit: 'cover',
             opacity: imgLoaded ? 1 : 0,
             transition: 'opacity 0.3s ease',
             pointerEvents: 'none',
@@ -210,24 +207,6 @@ export default function SwipeCard({
           position: 'absolute', bottom: 0, left: 0, right: 0, height: '55%',
           background: 'linear-gradient(to top, rgba(0,0,0,0.92) 0%, rgba(0,0,0,0.5) 50%, transparent 100%)',
         }} />
-
-        {/* Favorite star badge */}
-        {isFavorite && (
-          <motion.div
-            initial={{ scale: 0 }}
-            animate={{ scale: 1 }}
-            style={{
-              position: 'absolute', top: 14, right: 14,
-              width: 36, height: 36, borderRadius: '50%',
-              background: 'rgba(255,214,0,0.25)',
-              border: '2px solid rgba(255,214,0,0.6)',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              zIndex: 10,
-            }}
-          >
-            <Star size={18} fill="#ffd600" color="#ffd600" />
-          </motion.div>
-        )}
 
         {/* Top Header: Source badge */}
         <div style={{ position: 'absolute', top: 16, left: 16, right: 16, display: 'flex', justifyContent: 'space-between', alignItems: 'center', zIndex: 10 }}>
@@ -252,23 +231,6 @@ export default function SwipeCard({
           )}
         </div>
 
-        {/* Double-tap favorite flash */}
-        {showFavFlash && (
-          <motion.div
-            initial={{ opacity: 0, scale: 0.3 }}
-            animate={{ opacity: 1, scale: 1.3 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.3 }}
-            style={{
-              position: 'absolute', inset: 0,
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              zIndex: 20, pointerEvents: 'none',
-            }}
-          >
-            <Star size={80} fill="#ffd600" color="#ffd600" style={{ filter: 'drop-shadow(0 0 30px rgba(255,214,0,0.6))' }} />
-          </motion.div>
-        )}
-
         {/* File info */}
         <div style={{
           position: 'absolute', bottom: 0, left: 0, right: 0,
@@ -291,9 +253,6 @@ export default function SwipeCard({
             }}>{formatSize(file.size)}</span>
             <span style={{ fontSize: '13px', fontWeight: 600, color: 'rgba(255,255,255,0.7)' }}>
               {file.format || 'JPEG'}
-            </span>
-            <span style={{ fontSize: '13px', fontWeight: 500, color: 'rgba(255,255,255,0.6)', marginLeft: 'auto' }}>
-              {file.date || 'Feb 14, 2024'}
             </span>
           </div>
         </div>

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Headphones, Settings, X, User, Crown, HelpCircle, Info } from 'lucide-react';
+import { Headphones, Trash2, X, User, Crown, HelpCircle, Info } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 import { soundEngine } from '../utils/soundEngine';
 
@@ -11,7 +11,7 @@ function FlickLogo() {
 }
 
 export default function TopBar() {
-  const { asmrMode, setAsmrMode, view, setView } = useApp();
+  const { asmrMode, setAsmrMode, view, setView, trash } = useApp();
   const [menuOpen, setMenuOpen] = useState(false);
 
   const handleAsmrToggle = () => {
@@ -87,67 +87,31 @@ export default function TopBar() {
             )}
           </button>
 
-          {/* Settings */}
+          {/* Trash */}
           <button 
-            onClick={() => setView('settings')}
+            onClick={() => setView('trash')}
             style={{
-              background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.06)',
+              background: view === 'trash' ? 'rgba(255, 59, 92, 0.1)' : 'rgba(255,255,255,0.04)',
+              border: `1px solid ${view === 'trash' ? 'rgba(255, 59, 92, 0.4)' : 'rgba(255,255,255,0.06)'}`,
               width: 40, height: 40, borderRadius: '12px',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
-              cursor: 'pointer', outline: 'none'
+              cursor: 'pointer', outline: 'none', position: 'relative'
             }}
           >
-            <Settings size={18} color="var(--text-secondary)" />
+            <Trash2 size={18} color={view === 'trash' ? "var(--accent-red)" : "var(--text-secondary)"} />
+            {trash.length > 0 && (
+              <span style={{
+                position: 'absolute', top: -4, right: -4,
+                background: 'var(--accent-red)', color: '#fff',
+                fontSize: '9px', fontWeight: 800, padding: '2px 5px',
+                borderRadius: '6px', minWidth: '16px', textAlign: 'center'
+              }}>
+                {trash.length}
+              </span>
+            )}
           </button>
         </div>
       </div>
-
-      {/* Drawer Overlay */}
-      <AnimatePresence>
-        {menuOpen && (
-          <div style={{ position: 'absolute', inset: 0, zIndex: 1000, display: 'flex' }}>
-            <motion.div
-              initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-              onClick={() => setMenuOpen(false)}
-              style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(4px)' }}
-            />
-            <motion.div
-              initial={{ x: '-100%' }} animate={{ x: 0 }} exit={{ x: '-100%' }}
-              transition={{ type: 'spring', stiffness: 400, damping: 30 }}
-              style={{
-                position: 'relative', width: '280px', height: '100%',
-                background: 'var(--bg-secondary)', borderRight: '1px solid var(--border)',
-                display: 'flex', flexDirection: 'column', paddingTop: '20px'
-              }}
-            >
-              <div style={{ padding: '0 20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                  <FlickLogo />
-                  <span style={{ fontSize: '20px', fontWeight: 800, color: '#fff', fontFamily: "'Space Grotesk', sans-serif" }}>Menu</span>
-                </div>
-                <button onClick={() => setMenuOpen(false)} style={{ background: 'none', border: 'none', color: 'var(--text-secondary)' }}>
-                  <X size={20} />
-                </button>
-              </div>
-
-              <div style={{ marginTop: '40px', display: 'flex', flexDirection: 'column', gap: '8px', padding: '0 16px' }}>
-                <button style={{ display: 'flex', alignItems: 'center', gap: '14px', padding: '16px', borderRadius: '12px', background: 'rgba(255,255,255,0.03)', border: 'none', color: '#fff', fontWeight: 600 }}>
-                  <User size={18} color="var(--accent-blue)" /> Profile
-                </button>
-                <button style={{ display: 'flex', alignItems: 'center', gap: '14px', padding: '16px', borderRadius: '12px', background: 'rgba(157, 107, 255, 0.1)', border: '1px solid rgba(157, 107, 255, 0.3)', color: '#fff', fontWeight: 600 }}>
-                  <Crown size={18} color="var(--accent-yellow)" /> Upgrade to Pro
-                </button>
-                <button style={{ display: 'flex', alignItems: 'center', gap: '14px', padding: '16px', borderRadius: '12px', background: 'transparent', border: 'none', color: 'var(--text-secondary)', fontWeight: 600 }}>
-                  <HelpCircle size={18} /> Support
-                </button>
-                <button style={{ display: 'flex', alignItems: 'center', gap: '14px', padding: '16px', borderRadius: '12px', background: 'transparent', border: 'none', color: 'var(--text-secondary)', fontWeight: 600 }}>
-                  <Info size={18} /> About FlickFiles
-                </button>
-              </div>
-            </motion.div>
-          </div>
-        )}
-      </AnimatePresence>
     </>
   );
 }

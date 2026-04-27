@@ -9,7 +9,6 @@ export function AppProvider({ children }) {
   const [trash, setTrash] = useState([]);
   const [kept, setKept] = useState([]);
   const [organized, setOrganized] = useState([]);
-  const [favorites, setFavorites] = useState([]);
   
   // Settings
   const [asmrMode, setAsmrMode] = useState(true);
@@ -25,7 +24,7 @@ export function AppProvider({ children }) {
 
   const [toasts, setToasts] = useState([]);
   const [savedMB, setSavedMB] = useState(0);
-  // 'main' | 'trash' | 'settings' | 'sources' | 'stats' | 'multiselect'  
+  // 'main' | 'trash' | 'settings' | 'sources' | 'stats' | 'multiselect' | 'appcleaner'
   const [view, setView] = useState('main');
   const [activeSource, setActiveSource] = useState('all');
   const [activeTypeFilter, setActiveTypeFilter] = useState('all');
@@ -56,10 +55,9 @@ export function AppProvider({ children }) {
     totalSwiped: swipeCount,
     totalTrashed: trash.length,
     totalOrganized: organized.length,
-    totalFavorited: favorites.length,
     savedMB,
     allReviewed: files.length === 0,
-  }), [swipeCount, trash.length, organized.length, favorites.length, savedMB, files.length]);
+  }), [swipeCount, trash.length, organized.length, savedMB, files.length]);
 
   const addToast = useCallback((message, type = 'info', fileId = null) => {
     const id = Date.now();
@@ -105,7 +103,6 @@ export function AppProvider({ children }) {
 
   const moveToTrash = useCallback((file) => {
     setFiles(prev => prev.filter(f => f.id !== file.id));
-    setFavorites(prev => prev.filter(f => f.id !== file.id));
     setTrash(prev => [{ ...file, trashedAt: Date.now() }, ...prev]);
     setSavedMB(prev => prev + file.size);
     incrementSwipe();
@@ -136,20 +133,6 @@ export function AppProvider({ children }) {
     triggerHaptic([10, 20]);
     addToast(`Moved to ${folder.name}`, 'folder');
   }, [addToast, incrementSwipe, triggerHaptic]);
-
-  const toggleFavorite = useCallback((file) => {
-    setFavorites(prev => {
-      const exists = prev.find(f => f.id === file.id);
-      if (exists) {
-        addToast(`Removed from favorites`, 'info');
-        return prev.filter(f => f.id !== file.id);
-      } else {
-        triggerHaptic([10, 10, 10]);
-        addToast(`⭐ Added to favorites!`, 'favorite');
-        return [file, ...prev];
-      }
-    });
-  }, [addToast, triggerHaptic]);
 
   const restoreFromTrash = useCallback((fileId) => {
     const file = trash.find(f => f.id === fileId);
@@ -202,22 +185,18 @@ export function AppProvider({ children }) {
     const targetIds = ids || selectedFiles;
     if (targetIds.size === 0) return;
 
-    const selected = [...files, ...favorites].filter(f => targetIds.has(f.id));
-    // Remove duplicates if any
-    const uniqueSelected = Array.from(new Map(selected.map(item => [item.id, item])).values());
-    
-    const totalMB = uniqueSelected.reduce((sum, f) => sum + f.size, 0);
+    const selected = files.filter(f => targetIds.has(f.id));
+    const totalMB = selected.reduce((sum, f) => sum + f.size, 0);
     
     setFiles(prev => prev.filter(f => !targetIds.has(f.id)));
-    setFavorites(prev => prev.filter(f => !targetIds.has(f.id)));
-    setTrash(prev => [...uniqueSelected.map(f => ({ ...f, trashedAt: Date.now() })), ...prev]);
+    setTrash(prev => [...selected.map(f => ({ ...f, trashedAt: Date.now() })), ...prev]);
     
     setSavedMB(prev => prev + totalMB);
     triggerHaptic([20, 30, 20, 30, 20]);
-    addToast(`Moved ${uniqueSelected.length} items to trash`, 'trash');
+    addToast(`Moved ${selected.length} items to trash`, 'trash');
     
     if (!ids) setSelectedFiles(new Set());
-  }, [files, favorites, selectedFiles, addToast, triggerHaptic]);
+  }, [files, selectedFiles, addToast, triggerHaptic]);
 
   const batchKeep = useCallback(() => {
     const selected = files.filter(f => selectedFiles.has(f.id));
@@ -240,7 +219,7 @@ export function AppProvider({ children }) {
 
   return (
     <AppContext.Provider value={{
-      files, filteredFiles, folders, createFolder, trash, kept, organized, favorites,
+      files, filteredFiles, folders, createFolder, trash, kept, organized,
       asmrMode, setAsmrMode,
       hapticFeedback, setHapticFeedback,
       swipeSound, setSwipeSound,
@@ -258,7 +237,6 @@ export function AppProvider({ children }) {
       gridMode, setGridMode,
       selectedFiles, toggleSelectFile, selectAll, deselectAll, batchDelete, batchKeep,
       moveToTrash, keepFile, permanentDelete, organizeFile,
-      toggleFavorite,
       restoreFromTrash, emptyTrash, restoreAllTrash, undoLastAction,
       triggerHaptic,
     }}>

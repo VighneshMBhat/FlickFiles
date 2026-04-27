@@ -9,7 +9,6 @@ import ToastSystem from './components/ToastSystem';
 import AppSourcesView from './components/AppSourcesView';
 import StatsView from './components/StatsView';
 import MultiSelectView from './components/MultiSelectView';
-import FavoritesView from './components/FavoritesView';
 import PreviewModal from './components/PreviewModal';
 import BottomNav from './components/BottomNav';
 import AppCleanerView from './components/AppCleanerView';
@@ -126,12 +125,6 @@ function AppInner() {
             <motion.div key="stats" initial={{ opacity: 0, x: 32 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -32 }}
               transition={viewTransition} style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
               <StatsView />
-            </motion.div>
-          )}
-          {view === 'favorites' && (
-            <motion.div key="favorites" initial={{ opacity: 0, x: 32 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -32 }}
-              transition={viewTransition} style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
-              <FavoritesView />
             </motion.div>
           )}
           {view === 'multiselect' && (
