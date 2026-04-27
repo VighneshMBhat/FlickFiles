@@ -1,17 +1,28 @@
 import React, { createContext, useContext, useState, useCallback, useMemo } from 'react';
-import { MOCK_FILES } from '../data/mockFiles';
+import { MOCK_FILES, FOLDERS as INITIAL_FOLDERS } from '../data/mockFiles';
 
 const AppContext = createContext();
 
 export function AppProvider({ children }) {
   const [files, setFiles] = useState(MOCK_FILES);
+  const [folders, setFolders] = useState(INITIAL_FOLDERS);
   const [trash, setTrash] = useState([]);
   const [kept, setKept] = useState([]);
   const [organized, setOrganized] = useState([]);
   const [favorites, setFavorites] = useState([]);
+  
+  // Settings
   const [asmrMode, setAsmrMode] = useState(true);
+  const [hapticFeedback, setHapticFeedback] = useState(true);
+  const [swipeSound, setSwipeSound] = useState('default'); // 'default', 'pop', 'arcade'
+  const [animationSpeed, setAnimationSpeed] = useState('medium'); // 'slow', 'medium', 'fast'
   const [confirmDeletion, setConfirmDeletion] = useState(true);
   const [darkMode, setDarkMode] = useState(true);
+  
+  // New Settings
+  const [autoEmptyTrash, setAutoEmptyTrash] = useState('never');
+  const [ignoreScreenshots, setIgnoreScreenshots] = useState(false);
+
   const [toasts, setToasts] = useState([]);
   const [savedMB, setSavedMB] = useState(0);
   // 'main' | 'trash' | 'settings' | 'sources' | 'stats' | 'multiselect'  
@@ -52,14 +63,14 @@ export function AppProvider({ children }) {
 
   const addToast = useCallback((message, type = 'info', fileId = null) => {
     const id = Date.now();
-    setToasts(prev => [...prev, { id, message, type, fileId }]);
+    setToasts([{ id, message, type, fileId }]);
     setTimeout(() => {
       setToasts(prev => prev.filter(t => t.id !== id));
-    }, 3500);
+    }, 2500);
   }, []);
 
   const removeToast = useCallback((id) => {
-    setToasts(prev => prev.filter(t => t.id !== id));
+    setToasts([]);
   }, []);
 
   const checkBadges = useCallback((updatedStats) => {
@@ -87,13 +98,14 @@ export function AppProvider({ children }) {
   }, []);
 
   const triggerHaptic = useCallback((pattern = [15]) => {
-    if (navigator.vibrate) {
+    if (hapticFeedback && navigator.vibrate) {
       navigator.vibrate(pattern);
     }
-  }, []);
+  }, [hapticFeedback]);
 
   const moveToTrash = useCallback((file) => {
     setFiles(prev => prev.filter(f => f.id !== file.id));
+    setFavorites(prev => prev.filter(f => f.id !== file.id));
     setTrash(prev => [{ ...file, trashedAt: Date.now() }, ...prev]);
     setSavedMB(prev => prev + file.size);
     incrementSwipe();
@@ -186,16 +198,26 @@ export function AppProvider({ children }) {
     setSelectedFiles(new Set());
   }, []);
 
-  const batchDelete = useCallback(() => {
-    const selected = files.filter(f => selectedFiles.has(f.id));
-    const totalMB = selected.reduce((sum, f) => sum + f.size, 0);
-    setFiles(prev => prev.filter(f => !selectedFiles.has(f.id)));
-    setTrash(prev => [...selected.map(f => ({ ...f, trashedAt: Date.now() })), ...prev]);
+  const batchDelete = useCallback((ids = null) => {
+    const targetIds = ids || selectedFiles;
+    if (targetIds.size === 0) return;
+
+    const selected = [...files, ...favorites].filter(f => targetIds.has(f.id));
+    // Remove duplicates if any
+    const uniqueSelected = Array.from(new Map(selected.map(item => [item.id, item])).values());
+    
+    const totalMB = uniqueSelected.reduce((sum, f) => sum + f.size, 0);
+    
+    setFiles(prev => prev.filter(f => !targetIds.has(f.id)));
+    setFavorites(prev => prev.filter(f => !targetIds.has(f.id)));
+    setTrash(prev => [...uniqueSelected.map(f => ({ ...f, trashedAt: Date.now() })), ...prev]);
+    
     setSavedMB(prev => prev + totalMB);
     triggerHaptic([20, 30, 20, 30, 20]);
-    addToast(`Moved ${selected.length} files to trash`, 'trash');
-    setSelectedFiles(new Set());
-  }, [files, selectedFiles, addToast, triggerHaptic]);
+    addToast(`Moved ${uniqueSelected.length} items to trash`, 'trash');
+    
+    if (!ids) setSelectedFiles(new Set());
+  }, [files, favorites, selectedFiles, addToast, triggerHaptic]);
 
   const batchKeep = useCallback(() => {
     const selected = files.filter(f => selectedFiles.has(f.id));
@@ -205,12 +227,28 @@ export function AppProvider({ children }) {
     setSelectedFiles(new Set());
   }, [files, selectedFiles, addToast]);
 
+  const createFolder = useCallback((name) => {
+    const newFolder = {
+      id: name.toLowerCase().replace(/\s+/g, '-'),
+      name,
+      icon: '📁',
+      color: '#4f7cff'
+    };
+    setFolders(prev => [...prev, newFolder]);
+    return newFolder;
+  }, []);
+
   return (
     <AppContext.Provider value={{
-      files, filteredFiles, trash, kept, organized, favorites,
+      files, filteredFiles, folders, createFolder, trash, kept, organized, favorites,
       asmrMode, setAsmrMode,
+      hapticFeedback, setHapticFeedback,
+      swipeSound, setSwipeSound,
+      animationSpeed, setAnimationSpeed,
       confirmDeletion, setConfirmDeletion,
       darkMode, setDarkMode,
+      autoEmptyTrash, setAutoEmptyTrash,
+      ignoreScreenshots, setIgnoreScreenshots,
       toasts, addToast, removeToast,
       savedMB, swipeCount, stats, newBadge, setNewBadge,
       view, setView,

@@ -12,7 +12,7 @@ class SoundEngine {
     return this.ctx;
   }
 
-  whoosh(direction = 'right') {
+  whoosh(direction = 'right', style = 'default') {
     if (!this.enabled) return;
     try {
       const ctx = this.getContext();
@@ -24,20 +24,36 @@ class SoundEngine {
       gainNode.connect(pannerNode);
       pannerNode.connect(ctx.destination);
 
-      oscillator.type = 'sine';
-      const startFreq = direction === 'right' ? 200 : 300;
-      const endFreq = direction === 'right' ? 600 : 100;
+      let startFreq, endFreq, dur;
+
+      if (style === 'pop') {
+        oscillator.type = 'sine';
+        startFreq = direction === 'right' ? 800 : 1000;
+        endFreq = direction === 'right' ? 400 : 600;
+        dur = 0.1;
+      } else if (style === 'arcade') {
+        oscillator.type = 'square';
+        startFreq = direction === 'right' ? 300 : 400;
+        endFreq = direction === 'right' ? 600 : 800;
+        dur = 0.15;
+      } else {
+        // default
+        oscillator.type = 'sine';
+        startFreq = direction === 'right' ? 200 : 300;
+        endFreq = direction === 'right' ? 600 : 100;
+        dur = 0.2;
+      }
 
       oscillator.frequency.setValueAtTime(startFreq, ctx.currentTime);
-      oscillator.frequency.exponentialRampToValueAtTime(endFreq, ctx.currentTime + 0.2);
+      oscillator.frequency.exponentialRampToValueAtTime(endFreq, ctx.currentTime + dur);
 
-      gainNode.gain.setValueAtTime(0.18, ctx.currentTime);
-      gainNode.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.25);
+      gainNode.gain.setValueAtTime(style === 'arcade' ? 0.05 : 0.18, ctx.currentTime);
+      gainNode.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + dur + 0.05);
 
       pannerNode.pan.setValueAtTime(direction === 'right' ? 0.7 : -0.7, ctx.currentTime);
 
       oscillator.start(ctx.currentTime);
-      oscillator.stop(ctx.currentTime + 0.25);
+      oscillator.stop(ctx.currentTime + dur + 0.05);
     } catch (e) { /* silent fail */ }
   }
 

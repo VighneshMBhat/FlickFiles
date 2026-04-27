@@ -9,7 +9,10 @@ import ToastSystem from './components/ToastSystem';
 import AppSourcesView from './components/AppSourcesView';
 import StatsView from './components/StatsView';
 import MultiSelectView from './components/MultiSelectView';
+import FavoritesView from './components/FavoritesView';
 import PreviewModal from './components/PreviewModal';
+import BottomNav from './components/BottomNav';
+import AppCleanerView from './components/AppCleanerView';
 import { soundEngine } from './utils/soundEngine';
 
 function BadgeToast() {
@@ -91,7 +94,7 @@ function AppInner() {
         `,
       }} />
 
-      <div style={{ position: 'relative', zIndex: 1, display: 'flex', flexDirection: 'column', height: '100%' }}>
+      <div style={{ position: 'relative', zIndex: 1, display: 'flex', flexDirection: 'column', flex: 1, overflow: 'hidden' }}>
         <TopBar />
 
         <AnimatePresence mode="wait">
@@ -125,15 +128,28 @@ function AppInner() {
               <StatsView />
             </motion.div>
           )}
+          {view === 'favorites' && (
+            <motion.div key="favorites" initial={{ opacity: 0, x: 32 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -32 }}
+              transition={viewTransition} style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+              <FavoritesView />
+            </motion.div>
+          )}
           {view === 'multiselect' && (
             <motion.div key="multiselect" initial={{ opacity: 0, scale: 0.96 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.96 }}
               transition={viewTransition} style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden', position: 'relative' }}>
               <MultiSelectView />
             </motion.div>
           )}
+          {view === 'appcleaner' && (
+            <motion.div key="appcleaner" initial={{ opacity: 0, x: 32 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -32 }}
+              transition={viewTransition} style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+              <AppCleanerView />
+            </motion.div>
+          )}
         </AnimatePresence>
       </div>
 
+      <BottomNav />
       <ToastSystem />
       <PreviewModal />
       <BadgeToast />

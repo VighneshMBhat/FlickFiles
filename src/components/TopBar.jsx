@@ -1,167 +1,153 @@
-import React from 'react';
-import { motion } from 'framer-motion';
-import { Settings, VolumeX, Volume2, ArrowLeft, Trash2, Layers, Trophy } from 'lucide-react';
+import React, { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Headphones, Settings, X, User, Crown, HelpCircle, Info } from 'lucide-react';
 import { useApp } from '../context/AppContext';
+import { soundEngine } from '../utils/soundEngine';
 
-// Flat SVG Logo
 function FlickLogo() {
   return (
-    <svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <rect width="28" height="28" rx="8" fill="url(#logoGrad)" />
-      <path d="M7 14L13 8L19 14" stroke="white" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"/>
-      <path d="M7 19L13 13L19 19" stroke="white" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" opacity="0.5"/>
-      <defs>
-        <linearGradient id="logoGrad" x1="0" y1="0" x2="28" y2="28" gradientUnits="userSpaceOnUse">
-          <stop stopColor="#4f7cff"/>
-          <stop offset="1" stopColor="#9d6bff"/>
-        </linearGradient>
-      </defs>
-    </svg>
-  );
-}
-
-function IconBtn({ children, onClick, active, color, badge }) {
-  return (
-    <motion.button
-      whileTap={{ scale: 0.88 }}
-      onClick={onClick}
-      style={{
-        width: 36, height: 36,
-        borderRadius: '11px',
-        background: active ? `${color}18` : 'rgba(255,255,255,0.05)',
-        border: `1px solid ${active ? `${color}40` : 'rgba(255,255,255,0.07)'}`,
-        display: 'flex', alignItems: 'center', justifyContent: 'center',
-        cursor: 'pointer',
-        position: 'relative',
-        flexShrink: 0,
-      }}
-    >
-      {children}
-      {badge && (
-        <motion.span
-          initial={{ scale: 0 }}
-          animate={{ scale: 1 }}
-          style={{
-            position: 'absolute', top: -4, right: -4,
-            minWidth: 16, height: 16,
-            borderRadius: '8px',
-            background: '#f0365a',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            fontSize: '9px', fontWeight: 800, color: '#fff',
-            border: '2px solid var(--bg-primary)',
-            padding: '0 3px',
-          }}
-        >{badge}</motion.span>
-      )}
-    </motion.button>
+    <img src="/logo.png" alt="FlickFiles Logo" style={{ width: 28, height: 28, borderRadius: 6, objectFit: 'contain', background: '#000' }} />
   );
 }
 
 export default function TopBar() {
-  const { asmrMode, setAsmrMode, view, setView, files, trash, setActiveSource } = useApp();
+  const { asmrMode, setAsmrMode, view, setView } = useApp();
+  const [menuOpen, setMenuOpen] = useState(false);
 
-  const handleBack = () => {
-    if (view === 'main') setActiveSource('all');
-    setView('main');
+  const handleAsmrToggle = () => {
+    const newVal = !asmrMode;
+    setAsmrMode(newVal);
+    if (newVal) soundEngine.pop();
   };
 
   return (
-    <div style={{
-      padding: '14px 16px 10px',
-      display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-      position: 'relative', zIndex: 50,
-      borderBottom: '1px solid rgba(255,255,255,0.04)',
-    }}>
-      {/* Left */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-        {view !== 'main' ? (
-          <motion.button
-            initial={{ opacity: 0, x: -10 }}
-            animate={{ opacity: 1, x: 0 }}
-            whileTap={{ scale: 0.9 }}
-            onClick={handleBack}
-            style={{
-              display: 'flex', alignItems: 'center', gap: '6px',
-              background: 'rgba(255,255,255,0.05)',
-              border: '1px solid rgba(255,255,255,0.08)',
-              borderRadius: '10px', padding: '7px 12px',
-              cursor: 'pointer', color: 'var(--text-primary)',
-              fontSize: '13px', fontWeight: 600,
-            }}
-          >
-            <ArrowLeft size={14} />
-            Back
-          </motion.button>
-        ) : (
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+    <>
+      <div style={{
+        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+        padding: '20px 20px 10px',
+        position: 'relative', zIndex: 100
+      }}>
+        {/* Left Section: Back Button (if not main) + Logo */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+          {view !== 'main' && (
+            <button 
+              onClick={() => setView('main')}
+              style={{
+                background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.06)',
+                width: 36, height: 36, borderRadius: '10px',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                cursor: 'pointer', outline: 'none', marginRight: '4px'
+              }}
+            >
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--text-primary)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M19 12H5M12 19l-7-7 7-7"/>
+              </svg>
+            </button>
+          )}
+          
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
             <FlickLogo />
             <span style={{
-              fontFamily: "'Space Grotesk', sans-serif",
-              fontSize: '18px', fontWeight: 700, letterSpacing: '-0.4px',
-              color: 'var(--text-primary)',
+              fontSize: '22px', fontWeight: 800, color: '#fff',
+              fontFamily: "'Space Grotesk', sans-serif", letterSpacing: '-0.5px'
             }}>
-              Flick<span style={{ color: 'var(--accent-blue)' }}>Files</span>
+              FlickFiles
             </span>
           </div>
-        )}
+        </div>
+
+        {/* Right Actions */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          {/* ASMR Toggle */}
+          <button 
+            onClick={handleAsmrToggle}
+            style={{
+              background: asmrMode ? 'rgba(108, 77, 255, 0.15)' : 'rgba(255,255,255,0.04)',
+              border: `1px solid ${asmrMode ? 'rgba(108, 77, 255, 0.4)' : 'rgba(255,255,255,0.06)'}`,
+              width: 40, height: 40, borderRadius: '12px',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              cursor: 'pointer', outline: 'none', transition: 'all 0.2s ease', position: 'relative'
+            }}
+          >
+            <Headphones size={18} color={asmrMode ? "var(--accent-purple)" : "var(--text-secondary)"} />
+            {asmrMode ? (
+              <motion.div
+                initial={{ scale: 0 }} animate={{ scale: 1 }}
+                style={{
+                  position: 'absolute', top: -2, right: -2,
+                  width: 10, height: 10, borderRadius: '50%',
+                  background: 'var(--accent-purple)',
+                  boxShadow: '0 0 8px var(--accent-purple)'
+                }}
+              />
+            ) : (
+              <svg style={{ position: 'absolute', width: '100%', height: '100%', pointerEvents: 'none' }}>
+                <line x1="8" y1="8" x2="32" y2="32" stroke="var(--text-secondary)" strokeWidth="2" strokeLinecap="round" />
+              </svg>
+            )}
+          </button>
+
+          {/* Settings */}
+          <button 
+            onClick={() => setView('settings')}
+            style={{
+              background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.06)',
+              width: 40, height: 40, borderRadius: '12px',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              cursor: 'pointer', outline: 'none'
+            }}
+          >
+            <Settings size={18} color="var(--text-secondary)" />
+          </button>
+        </div>
       </div>
 
-      {/* Right */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-        {/* File count */}
-        {view === 'main' && (
-          <div style={{
-            background: 'rgba(255,255,255,0.05)',
-            border: '1px solid rgba(255,255,255,0.07)',
-            borderRadius: '8px',
-            padding: '4px 9px',
-            fontSize: '12px', fontWeight: 600,
-            color: 'var(--text-muted)',
-            fontVariantNumeric: 'tabular-nums',
-          }}>
-            {files.length}
+      {/* Drawer Overlay */}
+      <AnimatePresence>
+        {menuOpen && (
+          <div style={{ position: 'absolute', inset: 0, zIndex: 1000, display: 'flex' }}>
+            <motion.div
+              initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+              onClick={() => setMenuOpen(false)}
+              style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(4px)' }}
+            />
+            <motion.div
+              initial={{ x: '-100%' }} animate={{ x: 0 }} exit={{ x: '-100%' }}
+              transition={{ type: 'spring', stiffness: 400, damping: 30 }}
+              style={{
+                position: 'relative', width: '280px', height: '100%',
+                background: 'var(--bg-secondary)', borderRight: '1px solid var(--border)',
+                display: 'flex', flexDirection: 'column', paddingTop: '20px'
+              }}
+            >
+              <div style={{ padding: '0 20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                  <FlickLogo />
+                  <span style={{ fontSize: '20px', fontWeight: 800, color: '#fff', fontFamily: "'Space Grotesk', sans-serif" }}>Menu</span>
+                </div>
+                <button onClick={() => setMenuOpen(false)} style={{ background: 'none', border: 'none', color: 'var(--text-secondary)' }}>
+                  <X size={20} />
+                </button>
+              </div>
+
+              <div style={{ marginTop: '40px', display: 'flex', flexDirection: 'column', gap: '8px', padding: '0 16px' }}>
+                <button style={{ display: 'flex', alignItems: 'center', gap: '14px', padding: '16px', borderRadius: '12px', background: 'rgba(255,255,255,0.03)', border: 'none', color: '#fff', fontWeight: 600 }}>
+                  <User size={18} color="var(--accent-blue)" /> Profile
+                </button>
+                <button style={{ display: 'flex', alignItems: 'center', gap: '14px', padding: '16px', borderRadius: '12px', background: 'rgba(157, 107, 255, 0.1)', border: '1px solid rgba(157, 107, 255, 0.3)', color: '#fff', fontWeight: 600 }}>
+                  <Crown size={18} color="var(--accent-yellow)" /> Upgrade to Pro
+                </button>
+                <button style={{ display: 'flex', alignItems: 'center', gap: '14px', padding: '16px', borderRadius: '12px', background: 'transparent', border: 'none', color: 'var(--text-secondary)', fontWeight: 600 }}>
+                  <HelpCircle size={18} /> Support
+                </button>
+                <button style={{ display: 'flex', alignItems: 'center', gap: '14px', padding: '16px', borderRadius: '12px', background: 'transparent', border: 'none', color: 'var(--text-secondary)', fontWeight: 600 }}>
+                  <Info size={18} /> About FlickFiles
+                </button>
+              </div>
+            </motion.div>
           </div>
         )}
-
-        <IconBtn onClick={() => setView('sources')} active={view === 'sources'} color="#9d6bff">
-          <Layers size={15} color={view === 'sources' ? '#9d6bff' : 'var(--text-secondary)'} />
-        </IconBtn>
-
-        <IconBtn onClick={() => setView('stats')} active={view === 'stats'} color="#ffcc00">
-          <Trophy size={15} color={view === 'stats' ? '#ffcc00' : 'var(--text-secondary)'} />
-        </IconBtn>
-
-        <IconBtn
-          onClick={() => setView('trash')}
-          active={trash.length > 0}
-          color="#f0365a"
-          badge={trash.length > 0 ? trash.length : null}
-        >
-          <Trash2 size={15} color={trash.length > 0 ? '#f0365a' : 'var(--text-secondary)'} />
-        </IconBtn>
-
-        {/* ASMR */}
-        <motion.button
-          whileTap={{ scale: 0.88 }}
-          onClick={() => setAsmrMode(v => !v)}
-          style={{
-            display: 'flex', alignItems: 'center', gap: '4px',
-            background: asmrMode ? 'rgba(79,124,255,0.15)' : 'rgba(255,255,255,0.05)',
-            border: `1px solid ${asmrMode ? 'rgba(79,124,255,0.4)' : 'rgba(255,255,255,0.07)'}`,
-            borderRadius: '11px', padding: '7px 10px',
-            cursor: 'pointer',
-            color: asmrMode ? '#4f7cff' : 'var(--text-secondary)',
-            fontSize: '11px', fontWeight: 700, letterSpacing: '0.3px',
-          }}
-        >
-          {asmrMode ? <Volume2 size={13} /> : <VolumeX size={13} />}
-          <span>{asmrMode ? 'ON' : 'OFF'}</span>
-        </motion.button>
-
-        <IconBtn onClick={() => setView('settings')} active={view === 'settings'} color="#4f7cff">
-          <Settings size={15} color={view === 'settings' ? '#4f7cff' : 'var(--text-secondary)'} />
-        </IconBtn>
-      </div>
-    </div>
+      </AnimatePresence>
+    </>
   );
 }

@@ -1,10 +1,10 @@
-import React, { useState, useRef, useCallback, useEffect } from 'react';
+import React, { useState, useRef, useCallback, useEffect, useMemo } from 'react';
 import { motion, useMotionValue, useTransform, useAnimation } from 'framer-motion';
 import { Trash2, Check, FolderOpen, Star, Image } from 'lucide-react';
 import { soundEngine } from '../utils/soundEngine';
 import { SWIPE_THRESHOLD } from '../data/mockFiles';
 
-const DRAG_SNAP_DURATION = { type: 'spring', stiffness: 300, damping: 30 };
+import { useApp } from '../context/AppContext';
 
 function formatSize(mb) {
   if (mb >= 1024) return `${(mb / 1024).toFixed(1)} GB`;
@@ -15,6 +15,14 @@ export default function SwipeCard({
   file, onSwipeLeft, onSwipeRight, onSwipeDown, onSwipeUp,
   index, asmrMode, onLongPress, onDoubleTap, isFavorite,
 }) {
+  const { animationSpeed } = useApp();
+  
+  const DRAG_SNAP_DURATION = useMemo(() => {
+    if (animationSpeed === 'fast') return { type: 'spring', stiffness: 600, damping: 25 };
+    if (animationSpeed === 'slow') return { type: 'spring', stiffness: 100, damping: 40 };
+    return { type: 'spring', stiffness: 300, damping: 30 }; // medium/default
+  }, [animationSpeed]);
+
   const x = useMotionValue(0);
   const y = useMotionValue(0);
   const controls = useAnimation();
@@ -86,7 +94,10 @@ export default function SwipeCard({
   const animateOut = async (direction) => {
     const dist = 800;
     const isSilent = !asmrMode;
-    const duration = isSilent ? 0.18 : 0.35;
+    let duration = isSilent ? 0.18 : 0.35;
+    
+    if (animationSpeed === 'fast') duration *= 0.6;
+    if (animationSpeed === 'slow') duration *= 1.8;
 
     switch (direction) {
       case 'left':
@@ -218,19 +229,28 @@ export default function SwipeCard({
           </motion.div>
         )}
 
-        {/* Source badge */}
-        {file.source && file.source !== 'all' && (
-          <div style={{
-            position: 'absolute', top: 14, left: 14,
-            background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(8px)',
-            border: '1px solid rgba(255,255,255,0.15)',
-            borderRadius: '10px', padding: '4px 10px',
-            fontSize: '11px', fontWeight: 600, color: 'rgba(255,255,255,0.75)',
-            zIndex: 10, textTransform: 'capitalize',
-          }}>
-            {file.source}
-          </div>
-        )}
+        {/* Top Header: Source badge */}
+        <div style={{ position: 'absolute', top: 16, left: 16, right: 16, display: 'flex', justifyContent: 'space-between', alignItems: 'center', zIndex: 10 }}>
+          {file.source && file.source !== 'all' && (
+            <div style={{
+              background: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(10px)',
+              border: '1px solid rgba(255,255,255,0.1)',
+              borderRadius: '20px', padding: '6px 12px',
+              display: 'flex', alignItems: 'center', gap: '6px',
+            }}>
+              {file.source === 'instagram' ? (
+                <div style={{ width: 14, height: 14, background: 'linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%)', borderRadius: '4px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <div style={{ width: 8, height: 8, border: '1.5px solid #fff', borderRadius: '3px' }} />
+                </div>
+              ) : (
+                <div style={{ width: 14, height: 14, background: 'rgba(255,255,255,0.2)', borderRadius: '50%' }} />
+              )}
+              <span style={{ fontSize: '12px', fontWeight: 600, color: '#fff', textTransform: 'capitalize' }}>
+                {file.source}
+              </span>
+            </div>
+          )}
+        </div>
 
         {/* Double-tap favorite flash */}
         {showFavFlash && (
@@ -254,23 +274,26 @@ export default function SwipeCard({
           position: 'absolute', bottom: 0, left: 0, right: 0,
           padding: '24px 22px',
         }}>
-          <p style={{
-            fontSize: '17px', fontWeight: 700, color: '#fff',
-            marginBottom: '6px', letterSpacing: '-0.3px',
+          <h3 style={{
+            fontSize: '18px', fontWeight: 800, color: '#fff',
+            marginBottom: '10px', letterSpacing: '-0.2px',
             textShadow: '0 2px 8px rgba(0,0,0,0.8)',
-          }}>{file.name}</p>
-          <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+          }}>{file.name}</h3>
+          
+          <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
             <span style={{
-              fontSize: '12px', fontWeight: 500,
-              color: 'rgba(255,255,255,0.6)',
-              background: 'rgba(255,255,255,0.1)',
-              padding: '3px 8px', borderRadius: '6px',
+              fontSize: '13px', fontWeight: 700,
+              color: '#fff',
+              background: 'rgba(255,255,255,0.15)',
+              backdropFilter: 'blur(8px)',
+              padding: '6px 12px', borderRadius: '8px',
+              border: '1px solid rgba(255,255,255,0.1)'
             }}>{formatSize(file.size)}</span>
-            <span style={{ fontSize: '12px', color: 'rgba(255,255,255,0.4)' }}>
-              {file.format}
+            <span style={{ fontSize: '13px', fontWeight: 600, color: 'rgba(255,255,255,0.7)' }}>
+              {file.format || 'JPEG'}
             </span>
-            <span style={{ fontSize: '12px', color: 'rgba(255,255,255,0.35)', marginLeft: 'auto' }}>
-              {file.date}
+            <span style={{ fontSize: '13px', fontWeight: 500, color: 'rgba(255,255,255,0.6)', marginLeft: 'auto' }}>
+              {file.date || 'Feb 14, 2024'}
             </span>
           </div>
         </div>

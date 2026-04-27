@@ -36,25 +36,27 @@ const TOAST_BORDER = {
 export default function ToastSystem() {
   const { toasts, removeToast, undoLastAction } = useApp();
 
+  if (toasts.length === 0) return null;
+
   return (
     <div style={{
-      position: 'absolute', bottom: '90px', left: '50%',
+      position: 'absolute', bottom: '85px', left: '50%',
       transform: 'translateX(-50%)', zIndex: 9999,
       display: 'flex', flexDirection: 'column',
       gap: '8px', alignItems: 'center',
       pointerEvents: 'none',
-      width: '90%', maxWidth: '360px',
+      width: '90%', maxWidth: '280px',
     }}>
       <AnimatePresence>
         {toasts.map((toast) => (
           <motion.div
             key={toast.id}
-            initial={{ opacity: 0, y: 20, scale: 0.9 }}
+            initial={{ opacity: 0, y: 20, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: -10, scale: 0.9 }}
-            transition={{ type: 'spring', stiffness: 400, damping: 30 }}
+            exit={{ opacity: 0, y: -10, scale: 0.95 }}
+            transition={{ type: 'spring', stiffness: 300, damping: 25 }}
             style={{
-              pointerEvents: 'all',
+              pointerEvents: 'all', width: '100%',
               background: TOAST_COLORS[toast.type] || TOAST_COLORS.info,
               border: `1px solid ${TOAST_BORDER[toast.type] || TOAST_BORDER.info}`,
               backdropFilter: 'blur(16px)',
